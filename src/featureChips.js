@@ -25,9 +25,10 @@ export default class FeatureChips extends Component{
     deleteFeature(feature){
         var array = [...this.state.features]; // make a separate copy of the array
         for (var i=0; i<this.state.features.length; i++){
-            if (this.state.features[i] == feature){
+            if (this.state.features[i] === feature){
                 array.splice(i, 1)
                 this.setState({features: array})
+                this.props.onSelection(array)
             }
         }
     }

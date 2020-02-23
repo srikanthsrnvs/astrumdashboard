@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import CloudUpload from '@material-ui/icons/CloudUpload'
 import Chip from '@material-ui/core/Chip'
 import FeatureChips from './featureChips'
-import TargetSelector from './targetChip';
+import TargetSelector from './targetSelector';
 
 
 const styles = makeStyles(theme => ({
@@ -87,13 +87,23 @@ export default function Builder(){
         
     }
 
+    function targetSelected(target){
+        setTarget(target)
+        console.log(target)
+    }
+
+    function featuresSelected(features){
+        setFeatures(features)
+        console.log(features)
+    }
+
     const ShowFeatures = (function(){
         if(csvHeaders.length > 0){
             return(
                 <div>
-                    <FeatureChips features={csvHeaders} />
+                    <FeatureChips features={csvHeaders} onSelection={featuresSelected}/>
                     <br></br>
-                    <TargetSelector features={csvHeaders} />
+                    <TargetSelector features={csvHeaders} onSelection={targetSelected}/>
                 </div>
             )
         }else{
