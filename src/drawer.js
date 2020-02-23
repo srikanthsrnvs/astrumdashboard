@@ -5,11 +5,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
+import ListIcon from '@material-ui/icons/List'
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import AddIcon from '@material-ui/icons/Add'
 import BuildIcon from '@material-ui/icons/Build';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Builder from './build'
@@ -60,12 +62,18 @@ export default function PermanentDrawerLeft() {
         <div className={classes.toolbar} />
         <Divider />
         <List>
-          {['Build', 'Settings'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <BuildIcon /> : <SettingsIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button key={"new"}>
+            <ListItemIcon><AddIcon /></ListItemIcon>
+            <ListItemText primary='New model' />
+          </ListItem>
+          <ListItem button key={'list'}>
+            <ListItemIcon><ListIcon /></ListItemIcon>
+            <ListItemText primary='All models' />
+          </ListItem>
+          <ListItem button key={'settings'}>
+            <ListItemIcon><SettingsIcon /></ListItemIcon>
+            <ListItemText primary='Settings' />
+          </ListItem>
         </List>
       </Drawer>
       <main className={classes.content}>

@@ -5,6 +5,7 @@ import CloudUpload from '@material-ui/icons/CloudUpload'
 import Chip from '@material-ui/core/Chip'
 import FeatureChips from './featureChips'
 import TargetSelector from './targetSelector';
+import ParsingContainer from './parsingContainer'
 
 
 const styles = makeStyles(theme => ({
@@ -42,6 +43,7 @@ export default function Builder(){
             if (xhr.status == 200){
                 var headers = JSON.parse(xhr.response).headers
                 setCSVHeaders(headers)
+                setFeatures(headers)
             }
         })
     }
@@ -97,13 +99,19 @@ export default function Builder(){
         console.log(features)
     }
 
+    function buildPressed(response){
+        console.log(response)
+    }
+
     const ShowFeatures = (function(){
         if(csvHeaders.length > 0){
             return(
                 <div>
-                    <FeatureChips features={csvHeaders} onSelection={featuresSelected}/>
+                    <FeatureChips features={features} onSelection={featuresSelected}/>
                     <br></br>
-                    <TargetSelector features={csvHeaders} onSelection={targetSelected}/>
+                    <TargetSelector target={target} features={csvHeaders} onSelection={targetSelected}/>
+                    <br></br>
+                    <ParsingContainer target={target} features={features} onBuild={buildPressed}></ParsingContainer>
                 </div>
             )
         }else{

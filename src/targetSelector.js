@@ -24,7 +24,7 @@ class TargetSelector extends Component{
     constructor(props){
         super(props)
         this.state = {
-            target : 'Select a target',
+            target : props.target,
             features : props.features
         }
         this.handleChange = this.handleChange.bind(this)
