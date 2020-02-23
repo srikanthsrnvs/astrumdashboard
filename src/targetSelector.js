@@ -32,6 +32,7 @@ class TargetSelector extends Component{
 
     handleChange(e){
         this.setState({target: e.target.value})
+        this.props.onSelection(e.target.value)
     }
 
     render(){
