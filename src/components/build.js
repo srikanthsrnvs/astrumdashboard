@@ -40,7 +40,7 @@ export default function Builder(){
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify({"link": link}))
         xhr.addEventListener('load', () => {
-            if (xhr.status == 200){
+            if (xhr.status === 200){
                 var headers = JSON.parse(xhr.response).headers
                 setCSVHeaders(headers)
                 setFeatures(headers)
@@ -63,7 +63,6 @@ export default function Builder(){
             // Required. Called when a user selects an item in the Chooser.
             success: function(file) {
                 var filename = file[0].name
-                var fileSize = file[0].bytes/1024*1024
                 setFilelink(file[0].link)
                 setFilename(filename)
                 getHeaders(file[0].link)

@@ -1,16 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import PermanentDrawerLeft from './drawer';
+import PermanentDrawerLeft from './components/drawer';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignIn from './login'
 import {FirebaseContext} from './components/Firebase'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { useState } from 'react';
 
 
 const THEME = createMuiTheme({
@@ -35,17 +30,24 @@ const THEME = createMuiTheme({
 });
 
 function App() {
+
+  const [user, setUser] = useState("")
+
+  function onSignIn(e){
+    setUser(e)
+  }
+
   return (
     <ThemeProvider theme={THEME}>
       <Router>
         <Switch>
           <Route exact path='/'>
             <FirebaseContext.Consumer>
-              {firebase => <SignIn firebase={firebase}/>}
+              {firebase => <SignIn onSignIn={onSignIn} firebase={firebase}/>}
             </FirebaseContext.Consumer>
           </Route>
           <Route path="/dashboard">
-            <PermanentDrawerLeft />
+            <PermanentDrawerLeft user={user}/>
           </Route>
         </Switch>
       </Router>

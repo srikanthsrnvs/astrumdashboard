@@ -44,7 +44,7 @@ class ParsingContainer extends Component{
     }
 
     validateTarget(){
-        if(this.state.target != ''){
+        if(this.state.target !== ''){
             return {success: true, error: ''}
         }else{
             return {success: false, error: 'There must be a target selected.'}
@@ -81,7 +81,7 @@ class ParsingContainer extends Component{
                 "target": this.state.target 
             }))
             xhr.addEventListener('load', () => {
-                if (xhr.status == 200){
+                if (xhr.status === 200){
                     var headers = JSON.parse(xhr.response).headers
                     //TODO
                 }
