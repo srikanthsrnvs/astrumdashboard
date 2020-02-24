@@ -3,6 +3,14 @@ import logo from './logo.svg';
 import './App.css';
 import PermanentDrawerLeft from './drawer';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import SignIn from './login'
+import {FirebaseContext} from './components/Firebase'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 
 const THEME = createMuiTheme({
@@ -29,7 +37,18 @@ const THEME = createMuiTheme({
 function App() {
   return (
     <ThemeProvider theme={THEME}>
-      {PermanentDrawerLeft()}
+      <Router>
+        <Switch>
+          <Route exact path='/'>
+            <FirebaseContext.Consumer>
+              {firebase => <SignIn firebase={firebase}/>}
+            </FirebaseContext.Consumer>
+          </Route>
+          <Route path="/dashboard">
+            <PermanentDrawerLeft />
+          </Route>
+        </Switch>
+      </Router>
     </ThemeProvider>
   );
 }
