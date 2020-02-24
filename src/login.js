@@ -60,10 +60,12 @@ export default function SignIn(props) {
                 props.onSignIn(user)
                 history.push('/dashboard')
             }else{
-                console.log(err)
+                console.log(user, err)
+                props.onSignIn("")
+                history.replace('/')
             }
         })
-    })
+    }, [])
 
     return (
         <Container component="main" maxWidth="xs">

@@ -17,7 +17,7 @@ const styles = makeStyles(theme => ({
     }
   }));
 
-export default function Builder(){
+export default function Builder(props){
 
     const classes = styles();
     const [filename, setFilename] = useState("No file selected");
@@ -25,6 +25,7 @@ export default function Builder(){
     const [csvHeaders, setCSVHeaders] = useState([])
     const [features, setFeatures] = useState([])
     const [target, setTarget] = useState("")
+    const user = props.user
 
     function deleteSelectedFile(){
         setFilename("No file selected")

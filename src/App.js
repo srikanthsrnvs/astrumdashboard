@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import PermanentDrawerLeft from './components/drawer';
+import Menu from './components/menu';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignIn from './login'
 import {FirebaseContext} from './components/Firebase'
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
 import { useState } from 'react';
 
 
@@ -46,8 +46,17 @@ function App() {
               {firebase => <SignIn onSignIn={onSignIn} firebase={firebase}/>}
             </FirebaseContext.Consumer>
           </Route>
-          <Route path="/dashboard">
-            <PermanentDrawerLeft user={user}/>
+          <Route path="/dashboard" render={() => {
+            if (!user){
+              return (<Redirect to="/" />)
+            }else{
+              return(
+                <FirebaseContext.Consumer>
+                  {firebase => <Menu user={user} firebase={firebase}/>}
+                </FirebaseContext.Consumer>
+              )
+            }
+          }}>
           </Route>
         </Switch>
       </Router>
