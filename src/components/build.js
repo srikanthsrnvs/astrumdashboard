@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import CloudUpload from '@material-ui/icons/CloudUpload'
+import DropboxIcon from './Icons/dropboxIcon'
 import Chip from '@material-ui/core/Chip'
 import FeatureChips from './featureChips'
 import TargetSelector from './targetSelector';
@@ -128,7 +128,7 @@ export default function Builder(props){
             <span>First, you'll need to prepare a dataset. <a href="http://www.astrum.ai">Click here</a> to check out how your data needs to be prepared before being uploaded to Dropbox.</span>
             <br></br>
             <div>
-                <Button startIcon={<CloudUpload/>} variant='outlined' color='primary' onClick={connectToDropbox} className={classes.dropboxButton}>Connect to dropbox</Button>
+                <Button startIcon={<DropboxIcon/>} variant='outlined' color='primary' onClick={connectToDropbox} className={classes.dropboxButton}>Connect to dropbox</Button>
                 <br></br>
                 <Chip className={classes.chip} label={filename} onDelete={deleteSelectedFile} color="primary" />
                 <br></br>

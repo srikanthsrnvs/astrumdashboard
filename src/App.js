@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Menu from './components/menu';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import SignIn from './login'
+import SignIn from './components/login'
 import {FirebaseContext} from './components/Firebase'
 import {BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
 import { useState } from 'react';
@@ -50,6 +50,7 @@ function App() {
             if (!user){
               return (<Redirect to="/" />)
             }else{
+              console.log(user)
               return(
                 <FirebaseContext.Consumer>
                   {firebase => <Menu user={user} firebase={firebase}/>}
