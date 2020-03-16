@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Menu from './components/menu';
+import Dashboard from './components/dashboard';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignIn from './components/login'
 import {FirebaseContext} from './components/Firebase'
@@ -53,7 +53,7 @@ function App() {
               console.log(user)
               return(
                 <FirebaseContext.Consumer>
-                  {firebase => <Menu user={user} firebase={firebase}/>}
+                  {firebase => <Dashboard user={user} firebase={firebase}/>}
                 </FirebaseContext.Consumer>
               )
             }

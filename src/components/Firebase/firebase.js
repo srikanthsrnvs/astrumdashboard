@@ -17,6 +17,7 @@ class Firebase{
     constructor(){
         app.initializeApp(firebaseConfig);
         this.auth = app.auth()
+        this.db = app.database
     }
 
     createAccount = (email, password) => {
@@ -29,6 +30,10 @@ class Firebase{
 
     signOut = () => {
         return this.auth.signOut()
+    }
+
+    setListenerOnUserData = (user) => {
+        return this.db.ref(`/`)
     }
 }
 

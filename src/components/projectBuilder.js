@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import DropboxIcon from './Icons/dropboxIcon'
@@ -9,15 +9,15 @@ import ParsingContainer from './parsingContainer'
 
 
 const styles = makeStyles(theme => ({
-    dropboxButton:{
+    dropboxButton: {
         marginTop: '20px'
     },
     chip: {
         marginTop: '10px'
     }
-  }));
+}));
 
-export default function Builder(props){
+export default function ProjectBuilder(props) {
 
     const classes = styles();
     const [filename, setFilename] = useState("No file selected");
@@ -27,7 +27,7 @@ export default function Builder(props){
     const [target, setTarget] = useState("")
     const user = props.user
 
-    function deleteSelectedFile(){
+    function deleteSelectedFile() {
         setFilename("No file selected")
         setFilelink("")
         setCSVHeaders([])
@@ -35,13 +35,13 @@ export default function Builder(props){
         setTarget("")
     }
 
-    function getHeaders(link){
+    function getHeaders(link) {
         var xhr = new XMLHttpRequest()
         xhr.open('POST', 'http://127.0.0.1:8080/datasets')
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({"link": link}))
+        xhr.send(JSON.stringify({ "link": link }))
         xhr.addEventListener('load', () => {
-            if (xhr.status === 200){
+            if (xhr.status === 200) {
                 var headers = JSON.parse(xhr.response).headers
                 setCSVHeaders(headers)
                 setFeatures(headers)
@@ -49,7 +49,7 @@ export default function Builder(props){
         })
     }
 
-    function connectToDropbox(){
+    function connectToDropbox() {
 
         var script = document.createElement('script')
         script.setAttribute('data-app-key', 'z5p9y3pr6ufqsbh')
@@ -62,59 +62,59 @@ export default function Builder(props){
         var options = {
 
             // Required. Called when a user selects an item in the Chooser.
-            success: function(file) {
+            success: function (file) {
                 var filename = file[0].name
                 setFilelink(file[0].link)
                 setFilename(filename)
                 getHeaders(file[0].link)
             },
-            cancel: function() {
-        
+            cancel: function () {
+
             },
             linkType: "direct", // or "direct"
             multiselect: false, // or true
             folderselect: false, // or true
             extensions: ['.csv']
         };
-        script.onerror = function(){
+        script.onerror = function () {
             console.log("Err")
         }
-        script.onload = function(){
+        script.onload = function () {
             window.Dropbox.choose(options)
         }
-        if (window.Dropbox){
+        if (window.Dropbox) {
             console.log("Trying to open picker")
             window.Dropbox.choose(options)
         }
-        
+
     }
 
-    function targetSelected(target){
+    function targetSelected(target) {
         setTarget(target)
         console.log(target)
     }
 
-    function featuresSelected(features){
+    function featuresSelected(features) {
         setFeatures(features)
         console.log(features)
     }
 
-    function buildPressed(response){
+    function buildPressed(response) {
         console.log(response)
     }
 
-    const ShowFeatures = (function(){
-        if(csvHeaders.length > 0){
-            return(
+    const ShowFeatures = (function () {
+        if (csvHeaders.length > 0) {
+            return (
                 <div>
-                    <FeatureChips features={features} onSelection={featuresSelected}/>
+                    <FeatureChips features={features} onSelection={featuresSelected} />
                     <br></br>
-                    <TargetSelector target={target} features={csvHeaders} onSelection={targetSelected}/>
+                    <TargetSelector target={target} features={csvHeaders} onSelection={targetSelected} />
                     <br></br>
                     <ParsingContainer target={target} features={features} onBuild={buildPressed}></ParsingContainer>
                 </div>
             )
-        }else{
+        } else {
             return (
                 null
             )
@@ -128,7 +128,7 @@ export default function Builder(props){
             <span>First, you'll need to prepare a dataset. <a href="http://www.astrum.ai">Click here</a> to check out how your data needs to be prepared before being uploaded to Dropbox.</span>
             <br></br>
             <div>
-                <Button startIcon={<DropboxIcon/>} variant='outlined' color='primary' onClick={connectToDropbox} className={classes.dropboxButton}>Connect to dropbox</Button>
+                <Button startIcon={<DropboxIcon />} variant='outlined' color='primary' onClick={connectToDropbox} className={classes.dropboxButton}>Connect to dropbox</Button>
                 <br></br>
                 <Chip className={classes.chip} label={filename} onDelete={deleteSelectedFile} color="primary" />
                 <br></br>
