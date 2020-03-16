@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/2bf46fdb-f7a1-4b9f-ab66-0a6fca691f0f/deploy-status)](https://app.netlify.com/sites/astrumdashboard/deploys)
+
 ## Available Scripts
 
 In the project directory, you can run:
