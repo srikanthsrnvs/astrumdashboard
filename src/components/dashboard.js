@@ -3,25 +3,38 @@ import ProjectBuilder from './projectBuilder'
 import SideMenu from './sideMenu'
 import AllProjects from './allProjects'
 
-const drawerWidth = 240;
+export default class Dashboard extends React.Component {
 
-export default function Dashboard(props) {
-  const user = props.user;
-  const firebase = props.firebase;
-  const [data, setData] = React.useState({});
-
-  function loadData(){
-    // TODO
+  constructor(props){
+    super(props)
+    this.user = props.user
+    this.firebase = props.firebase
+    this.state = {
+      data: {}
+    }
   }
 
-  return (
-    <div>
-      <SideMenu
-        newProject={<ProjectBuilder user={user} />}
-        allProjects={<AllProjects user={user} data="" firebase={firebase}/>}
-        settings={console.log("Hello")}
-        firebase={firebase}
-      />
-    </div>
-  );
+  loadData(){
+    let dashboard = this;
+    this.firebase.get_user_data(this.user, function(data){
+      dashboard.setState({data: data})
+    })
+  }
+
+  componentDidMount(){
+    this.loadData()
+  }
+
+  render(){
+    return (
+      <div>
+        <SideMenu
+          newProject={<ProjectBuilder user={this.user} />}
+          allProjects={<AllProjects user={this.user} data={this.state.data} firebase={this.firebase}/>}
+          settings={5}
+          firebase={this.firebase}
+        />
+      </div>
+    );
+  }
 }

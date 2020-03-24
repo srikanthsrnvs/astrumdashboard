@@ -65,7 +65,7 @@ export default function SignIn(props) {
                 history.replace('/')
             }
         })
-    }, [])
+    })
 
     return (
         <Container component="main" maxWidth="xs">

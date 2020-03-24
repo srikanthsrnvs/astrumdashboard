@@ -1,5 +1,4 @@
 import * as React from 'react';
-import createSvgIcon from '@material-ui/icons/utils/createSvgIcon';
 
 function AstrumIcon(props) {
   return (

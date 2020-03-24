@@ -1,5 +1,6 @@
 import app from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/database'
 
 const firebaseConfig = {
     apiKey: "AIzaSyAI6jdiSr92SVzXL0AwGKgdl9vf1n6O3xE",
@@ -17,7 +18,7 @@ class Firebase{
     constructor(){
         app.initializeApp(firebaseConfig);
         this.auth = app.auth()
-        this.db = app.database
+        this.db = app.database()
     }
 
     createAccount = (email, password) => {
@@ -34,6 +35,13 @@ class Firebase{
 
     setListenerOnUserData = (user) => {
         return this.db.ref(`/`)
+    }
+
+    get_user_data = (user, callback) => {
+        this.db.ref(`/users/${user.uid}`).on('value', function(snapshot){
+            console.log("Retrieved user information")
+            callback(snapshot.val())
+        })
     }
 }
 
