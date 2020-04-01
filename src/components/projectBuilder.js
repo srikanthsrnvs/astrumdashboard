@@ -35,14 +35,14 @@ export default function ProjectBuilder(props) {
         setTarget("")
     }
 
-    function getHeaders(link) {
+    function getHeaders(link, size) {
         var xhr = new XMLHttpRequest()
         xhr.open('POST', 'http://127.0.0.1:8080/datasets')
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({ "link": link }))
+        xhr.send(JSON.stringify({ "link": link, "size":  size, "uid": user.uid}))
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
-                var headers = JSON.parse(xhr.response).headers
+                var headers = JSON.parse(xhr.response).features
                 setCSVHeaders(headers)
                 setFeatures(headers)
             }
@@ -66,7 +66,7 @@ export default function ProjectBuilder(props) {
                 var filename = file[0].name
                 setFilelink(file[0].link)
                 setFilename(filename)
-                getHeaders(file[0].link)
+                getHeaders(file[0].link, file[0].bytes)
             },
             cancel: function () {
 
