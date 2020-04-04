@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
 import Chip from '@material-ui/core/Chip'
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import { DialogContentText } from '@material-ui/core';
+import PredictorDialog from './predictorDialog'
 
 const chipStyle = {
     marginTop: '10px',
@@ -17,9 +21,10 @@ export default class FeatureChips extends Component{
         
         super(props);
         this.state = {
-            features: props.features
+            features: props.features,
+            showPredictorDialog: false
         }
-        this.deleteFeature = this.deleteFeature.bind(this);
+        this.deleteFeature = this.deleteFeature.bind(this); 
     }
 
     deleteFeature(feature){
@@ -40,7 +45,10 @@ export default class FeatureChips extends Component{
         }
         return(
             <div>
+                <PredictorDialog open={this.state.showPredictorDialog} onClose={this.setState({"showPredictorDialog": false})}></PredictorDialog>
                 <h3 style={sectionTitle}>Selected features</h3>
+                <span>These are a list of predictors for your dataset.</span>
+                <button onClick={this.setState({showPredictorDialog:true})}>What's a predictor?</button>
                 {chips}
             </div>
         )

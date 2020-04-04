@@ -6,6 +6,11 @@ import Chip from '@material-ui/core/Chip'
 import FeatureChips from './featureChips'
 import TargetSelector from './targetSelector';
 import ParsingContainer from './parsingContainer'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Dropzone from 'react-dropzone'
+import FileDropper from './fileDropper'
+import TaskTypePicker from './taskTypePicker'
+import ImageClassiferBuilder from './imageClassiferBuilder';
 
 
 const styles = makeStyles(theme => ({
@@ -25,7 +30,9 @@ export default function ProjectBuilder(props) {
     const [csvHeaders, setCSVHeaders] = useState([])
     const [features, setFeatures] = useState([])
     const [target, setTarget] = useState("")
+    const [selectedType, setSelectedType] = useState(0)
     const user = props.user
+    const firebase = props.firebase
 
     function deleteSelectedFile() {
         setFilename("No file selected")
@@ -37,7 +44,7 @@ export default function ProjectBuilder(props) {
 
     function getHeaders(link, size) {
         var xhr = new XMLHttpRequest()
-        xhr.open('POST', 'http://127.0.0.1:8080/datasets')
+        xhr.open('POST', 'https://astrumdashboard.appspot.com/datasets')
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify({ "link": link, "size":  size, "uid": user.uid}))
         xhr.addEventListener('load', () => {
@@ -104,7 +111,7 @@ export default function ProjectBuilder(props) {
     }
 
     const ShowFeatures = (function () {
-        if (csvHeaders.length > 0) {
+        if (features.length > 0) {
             return (
                 <div>
                     <FeatureChips features={features} onSelection={featuresSelected} />
@@ -121,19 +128,31 @@ export default function ProjectBuilder(props) {
         }
     })
 
+    const ShowBuilder = (function() {
+        console.log(selectedType)
+        if (selectedType == 0){
+            return(
+                <TaskTypePicker onClick={setSelectedType}/>
+            )
+        }else if (selectedType == 1){
+            return(
+                <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+            )
+        }else if (selectedType == 2){
+            return(
+                null
+            )
+        }else{
+            return(
+                null
+            )
+        }
+    })
 
     return (
         <div>
             <h1>Let's get started</h1>
-            <span>First, you'll need to prepare a dataset. <a href="http://www.astrum.ai">Click here</a> to check out how your data needs to be prepared before being uploaded to Dropbox.</span>
-            <br></br>
-            <div>
-                <Button startIcon={<DropboxIcon />} variant='outlined' color='primary' onClick={connectToDropbox} className={classes.dropboxButton}>Connect to dropbox</Button>
-                <br></br>
-                <Chip className={classes.chip} label={filename} onDelete={deleteSelectedFile} color="primary" />
-                <br></br>
-                <ShowFeatures />
-            </div>
+            <ShowBuilder />
         </div>
     )
 }

@@ -1,6 +1,8 @@
 import app from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
+import 'firebase/storage'
+import { v4 as uuidv4 } from 'uuid';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAI6jdiSr92SVzXL0AwGKgdl9vf1n6O3xE",
@@ -19,6 +21,7 @@ class Firebase{
         app.initializeApp(firebaseConfig);
         this.auth = app.auth()
         this.db = app.database()
+        this.storage = app.storage()
     }
 
     createAccount = (email, password) => {
@@ -40,8 +43,13 @@ class Firebase{
     get_user_data = (user, callback) => {
         this.db.ref(`/users/${user.uid}`).on('value', function(snapshot){
             console.log("Retrieved user information")
-            callback(snapshot.val())
+            callback(snapshot)
         })
+    }
+
+    upload_file = function(file, user){
+        const metadata = {class_name: file.name.split('.').slice(0, -1).join('.'), uploaded_by: user.uid, uploaded_at: Math.floor(new Date()/1000)}
+        return this.storage.ref(`datasets`).child(uuidv4()).put(file, metadata)
     }
 }
 

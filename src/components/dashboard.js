@@ -29,7 +29,7 @@ export default class Dashboard extends React.Component {
     return (
       <div>
         <SideMenu
-          newProject={<ProjectBuilder user={this.user} />}
+          newProject={<ProjectBuilder firebase={this.firebase} user={this.user} />}
           allProjects={<AllProjects user={this.user} data={this.state.data} firebase={this.firebase}/>}
           settings={5}
           firebase={this.firebase}
