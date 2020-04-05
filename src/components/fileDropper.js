@@ -1,7 +1,7 @@
-import React, {useMemo, useCallback, useState} from 'react';
+import React, {useMemo, useCallback, useReducer, useState} from 'react';
 import { useDropzone } from 'react-dropzone';
 import Chip from '@material-ui/core/Chip'
-import { Button } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 
 const baseStyle = {
     flex: 1,
@@ -41,11 +41,22 @@ export default function FileDropper(props) {
 
     const firebase = props.firebase;
     const user = props.user;
-    const [files, setFiles] = useState({})
+    const [showLoader, setShowLoader] = useState(false)
+    const [files, setFiles] = useReducer((files, { type, value }) => {
+        switch (type) {
+          case "add":
+            return [...files, value];
+          case "remove":
+            return files.filter((_, index) => index !== value);
+          default:
+            return files;
+        }
+      }, []);
 
     const onDrop = useCallback((acceptedFiles) => {
         acceptedFiles.forEach((file) => {
             
+            setShowLoader(true)
             const reader = new FileReader()
             reader.onabort = () => console.log('file reading was aborted')
             reader.onerror = () => console.log('file reading has failed')
@@ -56,11 +67,15 @@ export default function FileDropper(props) {
             }
             reader.readAsArrayBuffer(file)
             firebase.upload_file(file, user).then(function(snapshot){
-                var files_object = {}
-                Object.assign(files_object, files)
                 snapshot.ref.getDownloadURL().then(function(url){
-                    files_object[file.name] = {'metadata': snapshot.metadata, 'link': url}
-                    setFiles(files_object)
+                    var fileName = file.name
+                    const newFile = {
+                        name: fileName,
+                        metadata: snapshot.metadata,
+                        link: url
+                    }
+                    setFiles({ type: "add", value: newFile})
+                    setShowLoader(false)
                 })
             })
         })
@@ -75,16 +90,20 @@ export default function FileDropper(props) {
     } = useDropzone({accept: '.zip', onDrop});
 
     const FileChips = () => {
+        props.setFilesAction(files)
         var chips = []
-        for (const file in files){
-            props.setFilesAction(files)
-            chips.push(<Chip variant='outlined' style={chipStyle} key={file} label={file.split('.').slice(0, -1).join('.')} color='primary'></Chip>)
+        for (var i=0; i<files.length; i++){
+            chips.push(<Chip variant='default' onDelete={() => setFiles({type: 'remove', value: i})} style={chipStyle} key={files[i].name} label={files[i].name.split('.').slice(0, -1).join('.')} color='primary'></Chip>)
         }
         return (
             <div>
                 {chips}
             </div>
         )
+    }
+
+    const ShowLoader = () => {
+        return ( showLoader ? (<CircularProgress />) : (null) )
     }
 
     const style = useMemo(() => ({
@@ -102,6 +121,7 @@ export default function FileDropper(props) {
             <div {...getRootProps({ style })}>
                 <input {...getInputProps()} />
                 <p>Drop your .zip file here or click to select a file to upload</p>
+                <ShowLoader />
             </div>
             <FileChips />
         </div>

@@ -129,7 +129,6 @@ export default function ProjectBuilder(props) {
     })
 
     const ShowBuilder = (function() {
-        console.log(selectedType)
         if (selectedType == 0){
             return(
                 <TaskTypePicker onClick={setSelectedType}/>
@@ -142,7 +141,7 @@ export default function ProjectBuilder(props) {
             return(
                 null
             )
-        }else{
+        }else if (selectedType == 3){
             return(
                 null
             )

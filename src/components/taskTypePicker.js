@@ -5,6 +5,7 @@ import TaskTypeCard from './taskTypeCard'
 import predictor from '../images/2.png'
 import img_classifier from '../images/1.png'
 import classifier from '../images/3.png'
+import custom from '../images/4.png'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +51,14 @@ export default function TaskTypePicker(props) {
                             image={classifier}
                             title="Data classification" 
                             text="Choose this option if the prediction target is discrete. For instance, predict if a customer would default on a loan." 
+                        />
+                    </Grid>
+                    <Grid key="custom" item>
+                        <TaskTypeCard 
+                            onClick={props.onClick.bind(null, 3)}
+                            image={custom}
+                            title="Custom model" 
+                            text="Choose this option if you want to build a custom deep learning model, tuned to your data. We'll find you the best possible model, billed at $4/hr to search for an architecture & train the model. (Recommended only for experts)" 
                         />
                     </Grid>
                 </Grid>

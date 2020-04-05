@@ -48,8 +48,9 @@ class Firebase{
     }
 
     upload_file = function(file, user){
-        const metadata = {class_name: file.name.split('.').slice(0, -1).join('.'), uploaded_by: user.uid, uploaded_at: Math.floor(new Date()/1000)}
-        return this.storage.ref(`datasets`).child(uuidv4()).put(file, metadata)
+        const fileName = file.name.split('.').slice(0, -1).join('.')
+        const metadata = {class_name: fileName, uploaded_by: user.uid, uploaded_at: Math.floor(new Date()/1000)}
+        return this.storage.ref(`datasets`).child(`${uuidv4()}$${fileName}$`).put(file, metadata)
     }
 }
 
