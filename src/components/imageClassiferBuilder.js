@@ -16,6 +16,7 @@ export default function ImageClassiferBuilder(props){
     const [files, setFiles] = useState([])
     const user = props.user;
     const [datasetID, setDatasetID] = useState("")
+    const [jobID, setJobID] = useState("")
 
     function upload_dataset(){
         var xhr = new XMLHttpRequest()
@@ -26,41 +27,44 @@ export default function ImageClassiferBuilder(props){
             "type": "image_classification",
             "uploaded_by": user.uid
         }
-
-        for (const file in files){
-            post_body["child_datasets"][file] = files[file]
+        for (const index in files){
+            // const file = files[index]
+            // const filename = file['name']
+            // const filedata = {'link': file['link'], 'metadata': file['metadata']}
+            post_body["child_datasets"] = files
         }
-        xhr.send(JSON.stringify({
+        xhr.send(JSON.stringify(
             post_body
-        }))
+        ))
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
-                setDatasetID(JSON.parse(xhr.response).dataset_id)
-                console.log("Recieved data ", JSON.parse(xhr.response))
+                const datasetID = JSON.parse(xhr.response).dataset_id
+                setDatasetID(datasetID)
+                beginTraining(datasetID)
             }
         })
     }
 
-    function beginTraining(){
+    function beginTraining(dID){
         var xhr = new XMLHttpRequest()
         xhr.open('POST', 'https://astrumdashboard.appspot.com/jobs')
         xhr.setRequestHeader("Content-Type", "application/json");
 
         var post_body = {
             "type": "image_classification",
-            "dataset": datasetID,
+            "dataset": dID,
             "created_by": user.uid,
             "created_at": Math.floor(new Date()/1000)
         }
 
-        xhr.send(JSON.stringify({
+        xhr.send(JSON.stringify(
             post_body
-        }))
+        ))
         xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
-                var headers = JSON.parse(xhr.response).features
-                console.log("Posted dataset")
-                
+                const jobID = JSON.parse(xhr.response).job_id
+                console.log("Recieved jobID "+jobID)
+                setJobID(jobID)
             }
         })
     }
