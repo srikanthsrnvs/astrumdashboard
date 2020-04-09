@@ -40,10 +40,28 @@ class Firebase{
         return this.db.ref(`/`)
     }
 
-    get_user_data = (user, callback) => {
-        this.db.ref(`/users/${user.uid}`).on('value', function(snapshot){
-            console.log("Retrieved user information")
-            callback(snapshot)
+    loadData = (user, callbk) => {
+        const self = this
+        this.db.ref(`/users/${user.uid}/jobs`).once('value', function(snapshot){
+            const jobs = snapshot.val()
+            var promises = []
+            jobs.forEach(job => {
+                promises.push(self.db.ref('/jobs/'+job).once('value'))
+            });
+            Promise.all(promises).then(function(snapshots){
+                callbk(snapshots)
+            })
+        })
+    }
+
+    listenForData = (user, callbk) => {
+        const self = this
+        this.db.ref(`/users/${user.uid}/jobs`).on('child_added', function(snapshot){
+            const job = snapshot.val()
+            self.db.ref('/jobs/'+job).on('value', function(childSnapshot){
+                const data = childSnapshot.val()
+                callbk(job, data)
+            })
         })
     }
 

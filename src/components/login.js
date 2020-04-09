@@ -42,11 +42,10 @@ export default function SignIn(props) {
     
     function signIn(e){
         e.preventDefault()
-        console.log(email, password, props.firebase)
         props.firebase
         .signIn(email, password)
         .then(authUser => {
-            console.log(authUser)
+            console.log("Login successful")
         })
         .catch(error => {
             console.log(error)
@@ -60,12 +59,11 @@ export default function SignIn(props) {
                 props.onSignIn(user)
                 history.push('/dashboard')
             }else{
-                console.log(user, err)
                 props.onSignIn("")
                 history.replace('/')
             }
         })
-    })
+    }, [])
 
     return (
         <Container component="main" maxWidth="xs">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState, useReducer} from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,6 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { IconButton, Button, LinearProgress } from '@material-ui/core';
+import {GetApp} from '@material-ui/icons'
+import { useHistory, useRouteMatch, Route, Switch } from 'react-router';
 
 const StyledTableCell = withStyles(theme => ({
   head: {
@@ -26,54 +29,83 @@ const StyledTableRow = withStyles(theme => ({
   },
 }))(TableRow);
 
-function createData(id, dateCreated, accuracy, size, downloadLink) {
-  return {id, dateCreated, accuracy, size, downloadLink};
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
   },
+  content:{
+    paddingLeft: 100,
+    paddingTop: 75,
+    paddingRight: 50
+  }
 });
 
 export default function ProjectsTable(props) {
   const classes = useStyles();
-  const data = props.data;
+  const firebase = props.firebase
+  const user = props.user
+  const data = props.data
+  const history = useHistory()
+  const match = useRouteMatch()
+
+  const handleClick = (dataInstance) => {
+    console.log(dataInstance)
+    history.push(match.path+'/'+dataInstance)
+  }
+
+  const ProjectTableContents = () => {
+    var contents = []
+    Object.keys(data).forEach(instance => {
+      const jobData = data[instance]
+      contents.push(
+        <StyledTableRow key={instance} style={{cursor:'pointer'}} hover>
+          <StyledTableCell onClick={handleClick.bind(null, instance)} component="th" scope="row">
+            {jobData.name}
+          </StyledTableCell>
+          <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">
+            <LinearProgress variant="determinate" value={50} valueBuffer={50} />
+          </StyledTableCell>
+          <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">{jobData.type}</StyledTableCell>
+          <StyledTableCell align="center">
+            <IconButton>
+              <GetApp></GetApp>
+            </IconButton>
+          </StyledTableCell>
+        </StyledTableRow>
+      )
+    })
+    return contents == [] ? null : contents
+  }
+
 
   return (
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="Projects Table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Project ID</StyledTableCell>
-            <StyledTableCell align="right">Date Created</StyledTableCell>
-            <StyledTableCell align="right">Model Accuracy</StyledTableCell>
-            <StyledTableCell align="right">Model Size</StyledTableCell>
-            <StyledTableCell align="right">Download</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => (
-            <StyledTableRow key={row.name}>
-              <StyledTableCell component="th" scope="row">
-                {row.downloadLink}
-              </StyledTableCell>
-              <StyledTableCell align="right">{row.id}</StyledTableCell>
-              <StyledTableCell align="right">{row.dateCreated}</StyledTableCell>
-              <StyledTableCell align="right">{row.accuracy}</StyledTableCell>
-              <StyledTableCell align="right">{row.size}</StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <div className={classes.content}>
+      <h1>
+        All Projects
+      </h1>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="Projects Table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Project Name</StyledTableCell>
+              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">Model Type</StyledTableCell>
+              <StyledTableCell align="center">Download Model</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <ProjectTableContents />
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Switch>
+        <Route path={`${match.path}/:instanceid`}>
+          <div>
+            {console.log(match.path)}
+          </div>
+        </Route>
+      </Switch>
+    </div>
   );
 }

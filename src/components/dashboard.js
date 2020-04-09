@@ -1,40 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ProjectBuilder from './projectBuilder'
 import SideMenu from './sideMenu'
-import AllProjects from './allProjects'
+import { Switch, Route, Redirect, useRouteMatch } from "react-router-dom";
+import ProjectsTable from './projectsTable';
 
-export default class Dashboard extends React.Component {
+export default function Dashboard(props) {
 
-  constructor(props){
-    super(props)
-    this.user = props.user
-    this.firebase = props.firebase
-    this.state = {
-      data: {}
-    }
-  }
+  const user = props.user;
+  const firebase = props.firebase;
+  const [jobData, setJobData] = useState({})
+  let match = useRouteMatch()
+  const ref = useRef(jobData)
+  useEffect(() => {
+    loadData()
+  }, [])
 
-  loadData(){
-    let dashboard = this;
-    this.firebase.get_user_data(this.user, function(data){
-      dashboard.setState({data: data})
+  const loadData = () => {
+    firebase.listenForData(user, function (job, job_data) {
+      ref.current = {...ref.current, [job]: job_data}
+      setJobData(ref.current)
     })
   }
 
-  componentDidMount(){
-    this.loadData()
-  }
-
-  render(){
-    return (
-      <div>
-        <SideMenu
-          newProject={<ProjectBuilder firebase={this.firebase} user={this.user} />}
-          allProjects={<AllProjects user={this.user} data={this.state.data} firebase={this.firebase}/>}
-          settings={5}
-          firebase={this.firebase}
-        />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <SideMenu
+        firebase={firebase}
+      />
+      <Switch>
+        <Route path={`${match.path}/new_project`}>
+          <ProjectBuilder user={user} firebase={firebase} />
+        </Route>
+        <Route exact path={`${match.path}/all_projects`}>
+          <ProjectsTable user={user} data={jobData} firebase={firebase} />
+        </Route>
+        <Route path={`${match.path}/settings`}>
+          <div>
+            Settings page
+          </div>
+        </Route>
+      </Switch>
+    </div>
+  )
 }

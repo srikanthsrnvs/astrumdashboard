@@ -18,6 +18,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { Link } from 'react-router-dom'
 
 const drawerWidth = 240;
 
@@ -84,12 +85,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function SideMenu(props) {
     const classes = useStyles();
-    const theme = useTheme();
-    const newProject = props.newProject;
+    const theme = useTheme();;
     const firebase = props.firebase;
-    const allProjects = props.allProjects;
-    const settings = props.settings;
-    const [selectedPage, setSelectedPage] = React.useState(newProject);
     const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -102,18 +99,6 @@ export default function SideMenu(props) {
 
     function signOut() {
         firebase.signOut()
-    }
-
-    function showNewProject() {
-        setSelectedPage(newProject)
-    }
-
-    function showAllProjects() {
-        setSelectedPage(allProjects)
-    }
-
-    function showSettings() {
-        setSelectedPage(settings)
     }
 
     return (
@@ -159,18 +144,24 @@ export default function SideMenu(props) {
                 </div>
                 <Divider />
                 <List>
-                    <ListItem button key="New Project" onClick={showNewProject}>
-                        <ListItemIcon><AddBoxIcon /></ListItemIcon>
-                        <ListItemText primary="New Project" />
-                    </ListItem>
-                    <ListItem button key="All Projects" onClick={showAllProjects}>
-                        <ListItemIcon><ListAltIcon /></ListItemIcon>
-                        <ListItemText primary="All Projects" />
-                    </ListItem>
-                    <ListItem button key="Settings" onClick={showSettings}>
-                        <ListItemIcon><SettingsIcon /></ListItemIcon>
-                        <ListItemText primary="Settings" />
-                    </ListItem>
+                    <Link to='/dashboard/new_project'>
+                        <ListItem button key="New Project">
+                            <ListItemIcon><AddBoxIcon /></ListItemIcon>
+                            <ListItemText primary="New Project" />
+                        </ListItem>
+                    </Link>
+                    <Link to='/dashboard/all_projects'>
+                        <ListItem button key="All Projects">
+                            <ListItemIcon><ListAltIcon /></ListItemIcon>
+                            <ListItemText primary="All Projects" />
+                        </ListItem>
+                    </Link>
+                    <Link to='/dashboard/settings'>
+                        <ListItem button key="Settings">
+                            <ListItemIcon><SettingsIcon /></ListItemIcon>
+                            <ListItemText primary="Settings" />
+                        </ListItem>
+                    </Link>
                 </List>
                 <Divider />
                 <ListItem button key="Logout" onClick={signOut}>
@@ -178,10 +169,6 @@ export default function SideMenu(props) {
                     <ListItemText primary="Logout" />
                 </ListItem>
             </Drawer>
-            <main className={classes.content}>
-                <div className={classes.toolbar} />
-                {selectedPage}
-            </main>
         </div>
     );
 }
