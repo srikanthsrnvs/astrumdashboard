@@ -34,12 +34,13 @@ export default function Dashboard(props) {
         <Route exact path={`${match.path}/all_projects`}>
           <ProjectsTable user={user} data={jobData} firebase={firebase} />
         </Route>
-        <Route path={`${match.path}/settings`}>
+        <Route exact path={`${match.path}/settings`}>
           <div>
             Settings page
           </div>
         </Route>
       </Switch>
+      <Redirect to={`${match.path}/new_project`}/>
     </div>
   )
 }

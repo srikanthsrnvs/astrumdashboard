@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TaskTypePicker from './taskTypePicker'
 import ImageClassiferBuilder from './imageClassiferBuilder';
+import { Switch, Route } from 'react-router-dom';
+import { useRouteMatch } from 'react-router';
+import ObjectDetectionBuilder from './objectDetectionBuilder'
 
 
 const styles = makeStyles(theme => ({
@@ -30,31 +33,33 @@ export default function ProjectBuilder(props) {
     const [selectedType, setSelectedType] = useState(0)
     const user = props.user
     const firebase = props.firebase
-
-    const ShowBuilder = (function() {
-        if (selectedType == 0){
-            return(
-                <TaskTypePicker onClick={setSelectedType}/>
-            )
-        }else if (selectedType == 1){
-            return(
-                <ImageClassiferBuilder firebase={firebase} user={props.user}/>
-            )
-        }else if (selectedType == 2){
-            return(
-                null
-            )
-        }else if (selectedType == 3){
-            return(
-                null
-            )
-        }
-    })
+    const match = useRouteMatch()
 
     return (
         <div className={classes.content}>
-            <h1>Let's get started</h1>
-            <ShowBuilder />
+            <Switch>
+                <Route exact path={`${match.path}`}>
+                    <TaskTypePicker />
+                </Route>
+                <Route path={`${match.path}/image_classification`}>
+                    <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+                </Route>
+                <Route path={`${match.path}/object_detection`}>
+                    <ObjectDetectionBuilder firebase={firebase} user={props.user}/>
+                </Route>
+                <Route path={`${match.path}/object_localization`}>
+                    <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+                </Route>
+                <Route path={`${match.path}/structured_classification`}>
+                    <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+                </Route>
+                <Route path={`${match.path}/structured_prediction`}>
+                    <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+                </Route>
+                <Route path={`${match.path}/custom`}>
+                    <ImageClassiferBuilder firebase={firebase} user={props.user}/>
+                </Route>
+            </Switch>
         </div>
     )
 }

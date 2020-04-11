@@ -64,12 +64,14 @@ export default function ProjectsTable(props) {
             {jobData.name}
           </StyledTableCell>
           <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">
-            <LinearProgress variant="determinate" value={50} valueBuffer={50} />
+            <LinearProgress variant="determinate" value={(jobData.status/3)*100} valueBuffer={50} />
           </StyledTableCell>
           <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">{jobData.type}</StyledTableCell>
           <StyledTableCell align="center">
             <IconButton>
-              <GetApp></GetApp>
+              <a style={{color: 'blue'}} href={jobData.model} target="_blank">
+                <GetApp />
+              </a>
             </IconButton>
           </StyledTableCell>
         </StyledTableRow>

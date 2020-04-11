@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { Typography, ThemeProvider, TextField, CircularProgress, Snackbar, SnackbarContent } from '@material-ui/core'
+import { Typography, ThemeProvider, TextField, CircularProgress, Snackbar, SnackbarContent, makeStyles } from '@material-ui/core'
 import FileDropper from './fileDropper'
 import Button from '@material-ui/core/Button'
-import Alert from '@material-ui/lab/Alert'
 import { Link } from 'react-router-dom'
-
+import TreeView from '@material-ui/lab/TreeView';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TreeItem from '@material-ui/lab/TreeItem';
 
 const styles = {
     buildButton: {
@@ -14,15 +16,25 @@ const styles = {
         marginTop: '40px'
     }
 }
+const useStyles = makeStyles((theme) => ({
+    root: {
+        height: 'auto',
+        flexGrow: 1,
+        marginTop: 20,
+        marginBottom: 20,
+    },
+}));
 
 export default function ImageClassiferBuilder(props) {
 
-    const [files, setFiles] = useState([])
+    const [file, setFile] = useState({})
     const user = props.user;
     const [jobName, setJobName] = useState("")
     const [jobID, setJobID] = useState("")
     const [loading, isLoading] = useState(false)
     const baseURL = 'https://astrumdashboard.appspot.com/'
+    const classes = useStyles();
+
 
     function upload_dataset() {
         var xhr = new XMLHttpRequest()
@@ -31,9 +43,9 @@ export default function ImageClassiferBuilder(props) {
 
         var post_body = {
             "type": "image_classification",
-            "uploaded_by": user.uid
+            "uploaded_by": user.uid,
+            "file": file
         }
-        post_body["child_datasets"] = files
         xhr.send(JSON.stringify(
             post_body
         ))
@@ -57,7 +69,6 @@ export default function ImageClassiferBuilder(props) {
             "created_at": Math.floor(new Date() / 1000),
             'name': jobName
         }
-
         xhr.send(JSON.stringify(
             post_body
         ))
@@ -69,6 +80,36 @@ export default function ImageClassiferBuilder(props) {
                 setJobID(jobID)
             }
         })
+    }
+
+    const ShowExampleTree = () => {
+        return (
+            <div>
+                <TreeView
+                    className={classes.root}
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
+                    <TreeItem nodeId='0' label="data.zip">
+                        <TreeItem nodeId="1" label="Dogs">
+                            <TreeItem nodeId="2" label="dog1.jpg" />
+                            <TreeItem nodeId="3" label="dog2.jpg" />
+                            <TreeItem nodeId="4" label="dog3.jpg" />
+                        </TreeItem>
+                        <TreeItem nodeId="5" label="Cats">
+                            <TreeItem nodeId="6" label="cat1.jpg" />
+                            <TreeItem nodeId="7" label="cat2.jpg" />
+                            <TreeItem nodeId="8" label="cat3.jpg" />
+                        </TreeItem>
+                        <TreeItem nodeId="9" label="Birds">
+                            <TreeItem nodeId="10" label="bird1.jpg" />
+                            <TreeItem nodeId="11" label="bird2.jpg" />
+                            <TreeItem nodeId="12" label="bird3.jpg" />
+                        </TreeItem>
+                    </TreeItem>
+                </TreeView>
+            </div>
+        )
     }
 
     function build_classifer() {
@@ -88,22 +129,8 @@ export default function ImageClassiferBuilder(props) {
         }
     }
 
-    const Redirect = () => {
-        if (jobID){
-            console.log("Redirecting")
-            return (
-                <Redirect to='/dashboard/all_projects'/>
-            )
-        }else{
-            console.log("Not yet redirecting")
-            return (
-                null
-            )
-        }
-    }
-
     const SnackbarAction = (
-        <Link to='/dashboard/all_projects' style={{'textDecoration': 'none', color: '#FFF'}}>
+        <Link to='/dashboard/all_projects' style={{ 'textDecoration': 'none', color: '#FFF' }}>
             <Button color='primary' variant='contained' size='small'>
                 Track Job
             </Button>
@@ -111,17 +138,21 @@ export default function ImageClassiferBuilder(props) {
     )
 
     return (
-        <div>
-            <Typography>First we'll need to upload data. In the box below, drop folders containing your image classes</Typography>
-            <Typography>You'll need to organize your images into folders to make sure that the algorithm learns correctly. For instance, if you want to classify dogs vs. cats, you'll need to create two folders. One containing dog images, and another containing cat images.</Typography>
-            <FileDropper setFilesAction={setFiles} firebase={props.firebase} user={props.user}></FileDropper>
+        <div style={{ marginTop: 20 }}>
+            <h2>Image Classification</h2>
+            <Typography variant='body2'>First we'll need to upload data. In the box below, drop folders containing images of a particular class.</Typography>
+            <br></br>
+            <Typography variant='body2'>You'll need to organize your images into folders to make sure that the algorithm learns correctly. Here's a folder structure for a classifier that learns to classify Dogs, Cats, and Birds:</Typography>
+            <ShowExampleTree />
+            <Typography variant='body2'>Ensure that each folder inside your zipfile is named according to the class of images it contains.</Typography>
+            <FileDropper setFile={setFile} firebase={props.firebase} user={props.user}></FileDropper>
             <form style={styles.projectName}>
                 <h2>Give your project a name</h2>
                 <TextField onChange={e => setJobName(e.target.value)} id='jobName' label='Project Name' variant='outlined' />
             </form>
-            <Button style={styles.buildButton} variant='outlined' color='primary' disabled={Object.keys(files).length < 2 || jobID !== "" || jobName === "" || loading} onClick={build_classifer}>Build Predictor</Button>
+            <Button style={styles.buildButton} variant='outlined' color='primary' disabled={file.name == "" || jobID !== "" || jobName === "" || loading} onClick={build_classifer}>Build Predictor</Button>
             <ShowSpinner />
-            <Snackbar open={jobID !== ""} autoHideDuration={6000} anchorOrigin={{'horizontal': "right", 'vertical': "bottom"}}>
+            <Snackbar open={jobID !== ""} autoHideDuration={6000} anchorOrigin={{ 'horizontal': "right", 'vertical': "bottom" }}>
                 <SnackbarContent
                     action={SnackbarAction}
                     message={"Sit tight, we're training a neural network for you ;)"}

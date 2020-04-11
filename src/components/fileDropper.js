@@ -1,7 +1,7 @@
 import React, {useMemo, useCallback, useReducer, useState} from 'react';
 import { useDropzone } from 'react-dropzone';
 import Chip from '@material-ui/core/Chip'
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Button, Snackbar, SnackbarContent } from '@material-ui/core';
 
 const baseStyle = {
     flex: 1,
@@ -42,18 +42,16 @@ export default function FileDropper(props) {
     const firebase = props.firebase;
     const user = props.user;
     const [showLoader, setShowLoader] = useState(false)
-    const [files, setFiles] = useReducer((files, { type, value }) => {
-        switch (type) {
-          case "add":
-            return [...files, value];
-          case "remove":
-            return files.filter((_, index) => index !== value);
-          default:
-            return files;
-        }
-      }, []);
+    const allowedTypes = props.allowedTypes
+    const maxSize = 20*1048576
+    const [isFileTooLarge, setFileTooLarge] = useState(false)
+    const [file, setFile] = useState({
+        name: "",
+        metadata: "",
+        link: ""
+    })
 
-    const onDrop = useCallback((acceptedFiles) => {
+    const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
         acceptedFiles.forEach((file) => {
             
             setShowLoader(true)
@@ -69,15 +67,15 @@ export default function FileDropper(props) {
             firebase.upload_file(file, user).then(function(snapshot){
                 snapshot.ref.getDownloadURL().then(function(url){
                     var fileName = file.name
-                    const newFile = {
-                        name: fileName,
-                        metadata: snapshot.metadata,
-                        link: url
-                    }
-                    setFiles({ type: "add", value: newFile})
+                    setFile({...file, name: fileName, metadata: snapshot.metadata, link: url})
                     setShowLoader(false)
                 })
             })
+        })
+        rejectedFiles.forEach((file) => {
+            if (file.size > maxSize){
+                setFileTooLarge(true)
+            }
         })
     }, [])
 
@@ -86,20 +84,59 @@ export default function FileDropper(props) {
         getInputProps,
         isDragActive,
         isDragAccept,
-        isDragReject
-    } = useDropzone({accept: '.zip', onDrop});
+        isDragReject,
+    } = useDropzone({accept: '.zip', onDrop, maxSize: maxSize});
 
     const FileChips = () => {
-        props.setFilesAction(files)
-        var chips = []
-        for (var i=0; i<files.length; i++){
-            chips.push(<Chip variant='default' onDelete={() => setFiles({type: 'remove', value: i})} style={chipStyle} key={files[i].name} label={files[i].name.split('.').slice(0, -1).join('.')} color='primary'></Chip>)
+        props.setFile(file)
+        if (file.name !== ""){
+            return (
+                <Chip variant='default' onDelete={console.log("Delete pressed")} style={chipStyle} key={file.name} label={file.name.split('.').slice(0, -1).join('.')} color='primary'></Chip>
+            )
         }
-        return (
-            <div>
-                {chips}
-            </div>
-        )
+        else{
+            return (null)
+        }
+    }
+
+    function connectToDropbox(){
+
+        var script = document.createElement('script')
+        script.setAttribute('data-app-key', 'z5p9y3pr6ufqsbh')
+        script.src = "https://www.dropbox.com/static/api/2/dropins.js"
+        script.id = "dropboxjs"
+        script.type = "text/javascript"
+        document.head.appendChild(script);
+
+        console.log("clicked")
+        var options = {
+
+            // Required. Called when a user selects an item in the Chooser.
+            success: function(file) {
+                var filename = file[0].name
+                var link = file[0].link
+                var metadata = {}
+                setFile({...file, name: filename, link: link, metadata: metadata})
+            },
+            cancel: function() {
+                
+            },
+            linkType: "direct", // or "direct"
+            multiselect: false, // or true
+            folderselect: false, // or true
+            extensions: ['.zip']
+        };
+        script.onerror = function(){
+            console.log("Err")
+        }
+        script.onload = function(){
+            window.Dropbox.choose(options)
+        }
+        if (window.Dropbox){
+            console.log("Trying to open picker")
+            window.Dropbox.choose(options)
+        }
+        
     }
 
     const ShowLoader = () => {
@@ -123,7 +160,20 @@ export default function FileDropper(props) {
                 <p>Drop your .zip file here or click to select a file to upload</p>
                 <ShowLoader />
             </div>
-            <FileChips />
+            <div style={{marginTop: 40}}>
+                <h4>If your file is larger than 100mb, upload it from Dropbox instead</h4>
+                <Button color='primary' variant='contained' onClick={connectToDropbox}>
+                    Connect to dropbox
+                </Button>
+            </div>
+            <div>
+                <FileChips />
+            </div>
+            <Snackbar open={isFileTooLarge} autoHideDuration={6000} anchorOrigin={{ 'horizontal': "right", 'vertical': "bottom" }}>
+                <SnackbarContent
+                    message={"Your file is too large. Please use Dropbox instead"}
+                />
+            </Snackbar>
         </div>
     );
 }
