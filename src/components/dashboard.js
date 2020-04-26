@@ -3,6 +3,7 @@ import ProjectBuilder from './projectBuilder'
 import SideMenu from './sideMenu'
 import { Switch, Route, Redirect, useRouteMatch } from "react-router-dom";
 import ProjectsTable from './projectsTable';
+import Project from './project'
 
 export default function Dashboard(props) {
 
@@ -31,10 +32,10 @@ export default function Dashboard(props) {
         <Route path={`${match.path}/new_project`}>
           <ProjectBuilder user={user} firebase={firebase} />
         </Route>
-        <Route exact path={`${match.path}/all_projects`}>
+        <Route path={`${match.path}/all_projects`}>
           <ProjectsTable user={user} data={jobData} firebase={firebase} />
         </Route>
-        <Route exact path={`${match.path}/settings`}>
+        <Route path={`${match.path}/settings`}>
           <div>
             Settings page
           </div>

@@ -104,6 +104,11 @@ export default function ObjectDetectionBuilder(props) {
         )
     }
 
+    function setFileUploaded(uploaded){
+        console.log("Setting file in parent compionent, ", uploaded)
+        setFile({...file, uploaded})
+    }
+
     function build_classifer() {
         isLoading(true)
         upload_dataset()

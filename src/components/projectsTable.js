@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useReducer} from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,8 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { IconButton, Button, LinearProgress } from '@material-ui/core';
-import {GetApp} from '@material-ui/icons'
+import { GetApp } from '@material-ui/icons'
 import { useHistory, useRouteMatch, Route, Switch } from 'react-router';
+import Project from './project';
 
 const StyledTableCell = withStyles(theme => ({
   head: {
@@ -34,7 +35,7 @@ const useStyles = makeStyles({
   table: {
     minWidth: 700,
   },
-  content:{
+  content: {
     paddingLeft: 100,
     paddingTop: 75,
     paddingRight: 50
@@ -51,7 +52,7 @@ export default function ProjectsTable(props) {
 
   const handleClick = (dataInstance) => {
     console.log(dataInstance)
-    history.push(match.path+'/'+dataInstance)
+    history.push(match.path + '/' + dataInstance)
   }
 
   const ProjectTableContents = () => {
@@ -59,17 +60,17 @@ export default function ProjectsTable(props) {
     Object.keys(data).forEach(instance => {
       const jobData = data[instance]
       contents.push(
-        <StyledTableRow key={instance} style={{cursor:'pointer'}} hover>
+        <StyledTableRow key={instance} style={{ cursor: 'pointer' }} hover>
           <StyledTableCell onClick={handleClick.bind(null, instance)} component="th" scope="row">
             {jobData.name}
           </StyledTableCell>
           <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">
-            <LinearProgress variant="determinate" value={(jobData.status/3)*100} valueBuffer={50} />
+            <LinearProgress variant="determinate" value={(jobData.status / 3) * 100} valueBuffer={50} />
           </StyledTableCell>
           <StyledTableCell onClick={handleClick.bind(null, instance)} align="center">{jobData.type}</StyledTableCell>
           <StyledTableCell align="center">
             <IconButton>
-              <a style={{color: 'blue'}} href={jobData.model} target="_blank">
+              <a style={{ color: 'blue' }} href={jobData.model} target="_blank">
                 <GetApp />
               </a>
             </IconButton>
@@ -83,29 +84,29 @@ export default function ProjectsTable(props) {
 
   return (
     <div className={classes.content}>
-      <h1>
-        All Projects
-      </h1>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="Projects Table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Project Name</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
-              <StyledTableCell align="center">Model Type</StyledTableCell>
-              <StyledTableCell align="center">Download Model</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <ProjectTableContents />
-          </TableBody>
-        </Table>
-      </TableContainer>
       <Switch>
-        <Route path={`${match.path}/:instanceid`}>
-          <div>
-            {console.log(match.path)}
-          </div>
+        <Route exact path={`${match.path}/:id`}>
+          <Project data={data}></Project>
+        </Route>
+        <Route path={`${match.path}`}>
+          <h1>
+            All Projects
+          </h1>
+          <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="Projects Table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Project Name</StyledTableCell>
+                  <StyledTableCell align="center">Status</StyledTableCell>
+                  <StyledTableCell align="center">Model Type</StyledTableCell>
+                  <StyledTableCell align="center">Download Model</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <ProjectTableContents />
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Route>
       </Switch>
     </div>

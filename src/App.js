@@ -7,6 +7,8 @@ import {FirebaseContext} from './components/Firebase'
 import {BrowserRouter as Router, Switch, Route, Redirect} from "react-router-dom";
 import { useState } from 'react';
 import ProjectBuilder from './components/projectBuilder';
+import ReactGA from 'react-ga';
+ReactGA.initialize('Your Unique ID');
 
 
 const THEME = createMuiTheme({

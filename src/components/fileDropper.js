@@ -1,4 +1,4 @@
-import React, {useMemo, useCallback, useReducer, useState} from 'react';
+import React, { useMemo, useCallback, useReducer, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Chip from '@material-ui/core/Chip'
 import { CircularProgress, Button, Snackbar, SnackbarContent } from '@material-ui/core';
@@ -43,7 +43,7 @@ export default function FileDropper(props) {
     const user = props.user;
     const [showLoader, setShowLoader] = useState(false)
     const allowedTypes = props.allowedTypes
-    const maxSize = 20*1048576
+    const maxSize = 20 * 1048576
     const [isFileTooLarge, setFileTooLarge] = useState(false)
     const [file, setFile] = useState({
         name: "",
@@ -53,7 +53,7 @@ export default function FileDropper(props) {
 
     const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
         acceptedFiles.forEach((file) => {
-            
+
             setShowLoader(true)
             const reader = new FileReader()
             reader.onabort = () => console.log('file reading was aborted')
@@ -64,16 +64,17 @@ export default function FileDropper(props) {
                 console.log(binaryStr)
             }
             reader.readAsArrayBuffer(file)
-            firebase.upload_file(file, user).then(function(snapshot){
-                snapshot.ref.getDownloadURL().then(function(url){
+            firebase.upload_file(file, user).then(function (snapshot) {
+                snapshot.ref.getDownloadURL().then(function (url) {
                     var fileName = file.name
-                    setFile({...file, name: fileName, metadata: snapshot.metadata, link: url})
+                    setFile({ ...file, name: fileName, metadata: snapshot.metadata, link: url })
+                    props.setFile({name: fileName, metadata: snapshot.metadata, link: url})
                     setShowLoader(false)
                 })
             })
         })
         rejectedFiles.forEach((file) => {
-            if (file.size > maxSize){
+            if (file.size > maxSize) {
                 setFileTooLarge(true)
             }
         })
@@ -85,21 +86,47 @@ export default function FileDropper(props) {
         isDragActive,
         isDragAccept,
         isDragReject,
-    } = useDropzone({accept: '.zip', onDrop, maxSize: maxSize});
+    } = useDropzone({ accept: '.zip', onDrop, maxSize: maxSize });
+
+    function deleteFile() {
+        console.log("Attempting to delete the file")
+        setFile({ ...file, 'name': "", 'metadata': "", 'link': "" })
+        props.setFile(file)
+    }
 
     const FileChips = () => {
-        props.setFile(file)
-        if (file.name !== ""){
+        if (file.name !== "") {
             return (
-                <Chip variant='default' onDelete={console.log("Delete pressed")} style={chipStyle} key={file.name} label={file.name.split('.').slice(0, -1).join('.')} color='primary'></Chip>
+                <Chip
+                    style={chipStyle}
+                    key={file.name}
+                    label={file.name.split('.').slice(0, -1).join('.')}
+                    color='primary'>
+                </Chip>
             )
         }
-        else{
+        else {
             return (null)
         }
     }
 
-    function connectToDropbox(){
+    const ShowDropbox = () => {
+        if (isFileTooLarge) {
+            return (
+                <div style={{ marginTop: 40 }}>
+                    <h4>Your file seems to be larger than 100mb, upload it from Dropbox instead</h4>
+                    <Button color='primary' variant='contained' onClick={connectToDropbox}>
+                        Connect to dropbox
+                </Button>
+                </div>
+            )
+        }
+        else {
+            return null
+        }
+    }
+
+    function connectToDropbox() {
 
         var script = document.createElement('script')
         script.setAttribute('data-app-key', 'z5p9y3pr6ufqsbh')
@@ -112,35 +139,35 @@ export default function FileDropper(props) {
         var options = {
 
             // Required. Called when a user selects an item in the Chooser.
-            success: function(file) {
+            success: function (file) {
                 var filename = file[0].name
                 var link = file[0].link
                 var metadata = {}
-                setFile({...file, name: filename, link: link, metadata: metadata})
+                setFile({ ...file, name: filename, link: link, metadata: metadata })
             },
-            cancel: function() {
-                
+            cancel: function () {
+
             },
             linkType: "direct", // or "direct"
             multiselect: false, // or true
             folderselect: false, // or true
             extensions: ['.zip']
         };
-        script.onerror = function(){
+        script.onerror = function () {
             console.log("Err")
         }
-        script.onload = function(){
+        script.onload = function () {
             window.Dropbox.choose(options)
         }
-        if (window.Dropbox){
+        if (window.Dropbox) {
             console.log("Trying to open picker")
             window.Dropbox.choose(options)
         }
-        
+
     }
 
     const ShowLoader = () => {
-        return ( showLoader ? (<CircularProgress />) : (null) )
+        return (showLoader ? (<CircularProgress />) : (null))
     }
 
     const style = useMemo(() => ({
@@ -160,12 +187,7 @@ export default function FileDropper(props) {
                 <p>Drop your .zip file here or click to select a file to upload</p>
                 <ShowLoader />
             </div>
-            <div style={{marginTop: 40}}>
-                <h4>If your file is larger than 100mb, upload it from Dropbox instead</h4>
-                <Button color='primary' variant='contained' onClick={connectToDropbox}>
-                    Connect to dropbox
-                </Button>
-            </div>
+            <ShowDropbox />
             <div>
                 <FileChips />
             </div>
